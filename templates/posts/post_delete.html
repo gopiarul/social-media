@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Eliminar Post{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4">¿Seguro que quieres eliminar este post?</h1>
+    <p class="mb-4 text-gray-700">{{ object.text }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="py-2 px-4 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-700">
+            Sí, eliminar
+        </button>
+        <a href="{% url 'posts:post_list' %}" class="ml-4 text-gray-600">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
