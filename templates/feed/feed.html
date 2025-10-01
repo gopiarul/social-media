@@ -24,9 +24,9 @@
                             </a>
                         </li> 
                         <li>
-                            <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-dark-light transition">
+                            <a href="{% url 'account_logout' %}" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-dark-light transition">
                                 <i class="fas fa-bookmark text-primary"></i>
-                                <span>Saved Posts</span>
+                                <span>logout</span>
                             </a>
                         </li>
                         <li>
@@ -43,22 +43,38 @@
                 <div class="p-4">
                     <h2 class="font-bold text-lg mb-4">Suggested Users</h2>
                     <div class="space-y-4">
-                        {% for i in "12345"|make_list %}
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full" alt="User">
-                                <div>
-                                    <p class="font-medium">User{{ forloop.counter }}</p>
-                                    <p class="text-xs text-text-muted">@user{{ forloop.counter }}</p>
-                                </div>
-                            </div>
-                            <button class="text-xs bg-dark-light text-text-light px-3 py-1 rounded-full hover:bg-primary transition">Follow</button>
-                        </div>
-                        {% endfor %}
+                        {% for frds in frd %}
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ frds.profile_image.url }}" 
+                         class="w-10 h-10 rounded-full" 
+                         alt="{{ frds.name }}">
+                    <div>
+                        <p class="font-medium">{{ frds.name }}</p>
+                        <p class="text-xs text-gray-500">{{frds.name}}{{ forloop.counter }}</p>
                     </div>
                 </div>
+                <a href="{% url 'feed:follow_toggle' frds.id %}"
+                   class="text-xs px-3 py-1 rounded-full transition
+                          {% if user in frds.followers.all %}
+                              bg-gray-300 text-black
+                          {% else %}
+                              bg-primary text-white hover:bg-blue-600
+                          {% endif %}">
+                   {% if user in frds.followers.all %}
+                       Following
+                   {% else %}
+                       Follow
+                   {% endif %}
+                </a>
             </div>
+            {% empty %}
+            <p class="text-sm text-gray-500">No suggestions available.</p>
+            {% endfor %}
         </div>
+    </div>
+</div>
+</div>
         
         <!-- Main feed section -->
         <div class="md:col-span-2">

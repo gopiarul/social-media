@@ -1,26 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 from posts.models import Post
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 import logging
+from .models import Gop
 
 logger = logging.getLogger(__name__)
 
 @login_required
 def feed(request):
-    # Get all posts ordered by creation date, from newest to oldest
     posts = Post.objects.all().order_by('-created_at')
-    
-    # Pagination
-    posts_per_page = 5  # Number of posts per page
+    posts_per_page = 7
     posts_page_1 = posts[:posts_per_page]
     has_more = posts.count() > posts_per_page
+    frd = Gop.objects.exclude(followers=request.user)[:7]  # suggest people not followed yet
     
     return render(request, 'feed/feed.html', {
         'posts': posts_page_1,
-        'has_more': has_more
+        'has_more': has_more,
+        'frd': frd
     })
+
 
 @login_required
 def load_more(request):
@@ -59,3 +60,16 @@ def load_more(request):
         'html': html,
         'has_more': has_more
     })
+#def gop_view(request):
+    #frd=Gop.objects.all()
+    #return render(request,"feed/feed.html",{"frd":frd})
+@login_required
+def follow_toggle(request, gop_id):
+    gop_user = get_object_or_404(Gop, id=gop_id)
+
+    if request.user in gop_user.followers.all():
+        gop_user.followers.remove(request.user)   # unfollow
+    else:
+        gop_user.followers.add(request.user)      # follow
+
+    return redirect("feed:feed") 
